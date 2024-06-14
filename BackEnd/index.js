@@ -6,8 +6,8 @@ const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const path = require("path");
 const cors = require("cors");
-const { type } = require("os");
-const { error, log } = require("console");
+// const { type } = require("os");
+// const { error, log } = require("console");
 
 app.use(express.json());
 app.use(cors());
@@ -34,20 +34,16 @@ const upload = multer({storage:storage});
 
 //Creating upload Endpoint for images
 
-app.use('/images', express.static('upload/images'));  // Ensure this middleware is set before defining the route
+app.use('/images', express.static('upload/images'))
 
 
 app.post("/upload", upload.single('product'), (req, res) => {
-    if (req.file) {
-      res.json({
-        success: 1,
-        image_url: `http://localhost:4000/images/${req.file.filename}`
-      });
-    } else {
-      res.status(400).json({ success: 0, message: "No file uploaded" });
-    }
-  });
+    res.json({
+        success:1,
+        image_url:`http://localhost:${port}/images/${req.file.filename}`
+    })
 
+})
 
 //Schema for Creating Product
 
@@ -91,7 +87,8 @@ const Product = mongoose.model("Product",{
 app.post('/addproduct',async(req,res)=>{
     let products = await Product.find({});
     let id;
-    if(products.length>0){
+    if(products.length>0)
+    {
         let last_product_array = products.slice(-1);
         let last_product = last_product_array[0]; 
         id = last_product.id+1;
@@ -129,7 +126,7 @@ app.post('/removeproduct',async(req,res)=>{
 //Creating API for getting all products
 app.get('/allproduct',async(req,res)=>{
     let products = await Product.find({});
-    console.log("ALL product Fetched");
+    console.log("ALL products Fetched");
     res.send(products)
 })
 
@@ -192,7 +189,7 @@ app.post('/signup',async(req,res)=>{
 app.post('/login',async (req,res)=>{
     let user = await Users.findOne({email:req.body.email});
     if(user){
-        const passCompare = req.body.password === user.password   ;
+        const passCompare = req.body.password === user.password;
         if (passCompare){
             const data = {
                 user:{
@@ -203,12 +200,12 @@ app.post('/login',async (req,res)=>{
             res.json({success:true,token})
         }
         else{
-            res.json({success:false,erros:"Wrong password"});
+            res.json({success:false,errors:"Wrong password"});
         }
     }
 
     else{
-        res.json({success:false,errors:"Wrong email id"})
+        res.json({success:false,errors:"Wrong Email id"})
     }
 })
 
@@ -222,7 +219,7 @@ app.get('/newcollection',async (req,res)=>{
 
 //Creating endpoint for popular in women section
 app.get('/popularinwomen',async (req,res)=>{
-    let products = await Product.find({catagory:"men"});
+    let products = await Product.find({catagory:"asus"});
     let popular_in_women = products.slice(0,4);
     console.log("Popular in Women fetched");
     res.send(popular_in_women);
